@@ -1,55 +1,62 @@
-import React, { useRef, useState } from "react";
-import axios from 'axios'
+import React, { useState } from "react";
+import axios from "axios";
 
 const Weather = () => {
-  const [city, setcity] = useState('');
-  const [weather, setweather] = useState('')
-  const handleChange = (event) => {
-    setcity(event.target.value);
-  };
-  const handlerSubmit=async()=>{
-    const res=await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=c6d209411cbb7a0d88b97563111221d8&units=metric`)
-    console.log(res);
-    
-    setweather(res)
-    
+  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState(null);
 
-  }
+  const handleChange = (event) => {
+    setCity(event.target.value);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const res = await axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=c6d209411cbb7a0d88b97563111221d8&units=metric`
+      );
+      setWeather(res.data);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+      setWeather(null);
+    }
+  };
+
   return (
-    <>
-      <div className="flex items-center h-screen">
-        <div className="h-4/5 w-1/2 bg-blue-300 m-auto">
-          <h1 className="text-center text-6xl font-bold text-red-600">
-            WEATHER APP
-          </h1>
-          <div className="mt-6">
-            <input
-              type="text"
-              name=""
-              value={city}
-              onChange={handleChange}
-              placeholder="ENTER CITY NAME"
-              className="w-1/2 px-4 py-3 mx-4 my-4 text-3xl border-4 border-blue-800"
-            />
-            <span>
-              <button onClick={handlerSubmit} className="p-4 bg-green-600 text-white font-bold border-2 border-black hover:bg-green-800 text-xl">
-                GET WEATHER
-              </button>
-            </span>
-          </div>
-          {
-            weather&&(
-                <>
-                 <h1 className="text-6xl text-center">{weather.data.name}</h1>
-                 <p className="text-6xl font-bold text-orange-600 text-center mt-7">TEMP IS {weather.data.main.temp}</p>
-                 <p className="text-6xl font-bold text-blue-900 text-center mt-7">{weather.data.weather[0].description}</p>
-                 </>
-                 
-            )
-          }
+    <div className="min-h-screen bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 flex items-center justify-center">
+      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+        <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
+          Weather App
+        </h1>
+        <div className="mb-6">
+          <input
+            type="text"
+            value={city}
+            onChange={handleChange}
+            placeholder="Enter City Name"
+            className="w-full p-3 text-lg border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <button
+            onClick={handleSubmit}
+            className="mt-4 w-full bg-indigo-600 text-white p-3 rounded-md hover:bg-indigo-700 transition-all"
+          >
+            Get Weather
+          </button>
         </div>
+        {weather && (
+          <div className="mt-8 text-center">
+            <h2 className="text-3xl font-bold text-gray-800">
+              {weather.name}
+            </h2>
+            <p className="text-6xl font-bold text-blue-600 mt-4">
+              {Math.round(weather.main.temp)}°C
+            </p>
+            <p className="text-xl font-medium text-gray-700 mt-2">
+              {weather.weather[0].description.toUpperCase()}
+            </p>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 
